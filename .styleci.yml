@@ -1,0 +1,5 @@
+php:
+  preset: http-client
+  version: 1
+  disabled:
+    - no_unused_imports

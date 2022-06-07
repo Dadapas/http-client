@@ -1,0 +1,28 @@
+{
+    "name": "dadapas/http-client",
+    "description": "The psr-7 implementation for HTTP Messages",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Dadapas\\Http\\": "lib/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Dadapas\\HttpTests\\": "tests/"
+        }
+    },
+    "authors": [
+        {
+            "name": "TOVOHERY",
+            "email": "tovoherypascal@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "php": ">=7.2",
+        "ext-curl": "*"
+    },
+    "version": "1.0-alpha1"
+}
