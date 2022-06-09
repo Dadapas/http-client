@@ -2,13 +2,23 @@
 namespace Dadapas\HttpTests\Unit;
 
 use PHPUnit\Framework\TestCase;
+use Dadapas\Http\Request;
 
 final class HeadersTest extends TestCase
 {
+	protected $message;
 
-	public function with_header_test()
+	/**
+	 * @before
+	*/
+	protected function firstSetUp()
 	{
-		$message = $message->withHeader('foo', 'bar');
+		$this->message = new Request('GET', 'https://example.org');
+	}
+
+	public function test_ith_header()
+	{
+		$message = $this->message->withHeader('foo', 'bar');
 
 		$this->assertSame('bar', $message->getHeaderLine('foo'));
 		// Outputs: bar
@@ -25,9 +35,9 @@ final class HeadersTest extends TestCase
 		$this->assertSame(3, $variable, "$variable is not 3");
 	}
 
-	public function miltipleHeadersTest()
+	public function testMiltipleHeadersTest()
 	{
-		$message = $message
+		$message = $this->message
 		    ->withHeader('foo', 'bar')
 		    ->withAddedHeader('foo', 'baz');
 

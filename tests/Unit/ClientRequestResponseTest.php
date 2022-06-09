@@ -5,8 +5,8 @@ use PHPUnit\Framework\TestCase;
 
 final class ClientRequestResponseTest extends TestCase
 {
-	public function makerequestTest()
+	public function testRequest()
 	{
-		
+		$this->assertTrue(true);
 	}
 }
