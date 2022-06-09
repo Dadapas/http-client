@@ -1,6 +1,6 @@
 {
     "name": "dadapas/http-client",
-    "description": "The psr-7 implementation for HTTP Messages",
+    "description": "The psr-18 implementation for HTTP Clients",
     "type": "library",
     "license": "MIT",
     "autoload": {
@@ -13,6 +13,9 @@
             "Dadapas\\HttpTests\\": "tests/"
         }
     },
+    "provide": {
+        "psr/http-client-implementation": "1.0"
+    },
     "authors": [
         {
             "name": "TOVOHERY",
@@ -22,7 +25,11 @@
     "minimum-stability": "dev",
     "require": {
         "php": ">=7.2",
-        "ext-curl": "*"
+        "ext-curl": "*",
+        "psr/http-client": "1.0.x-dev"
     },
-    "version": "1.0-alpha1"
+    "version": "1.0-alpha1",
+    "require-dev": {
+        "phpunit/phpunit": "9.5.x-dev"
+    }
 }

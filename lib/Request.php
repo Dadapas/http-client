@@ -2,6 +2,8 @@
 namespace Dadapas\Http;
 
 use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\UriInterface;
+use InvalidArgumentException;
 
 class Request implements RequestInterface
 {

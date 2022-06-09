@@ -2,6 +2,7 @@
 namespace Dadapas\Http;
 
 use Psr\Http\Message\StreamInterface;
+use RuntimeException;
 
 /**
  * Describes a data stream.

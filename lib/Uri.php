@@ -1,6 +1,9 @@
 <?php
 namespace Dadapas\Http;
 
+use Psr\Http\Message\UriInterface;
+use InvalidArgumentException;
+
 class Uri implements UriInterface
 {
 	public function getScheme()

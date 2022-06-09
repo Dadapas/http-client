@@ -1,10 +1,12 @@
-<?php
+<?php declare(strict_types=1);
 namespace Dadapas\HttpTests\Unit;
 
-class HeaderTest extends TestCase
+use PHPUnit\Framework\TestCase;
+
+final class HeadersTest extends TestCase
 {
 
-	public function withHeaderTest()
+	public function with_header_test()
 	{
 		$message = $message->withHeader('foo', 'bar');
 

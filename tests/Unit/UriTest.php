@@ -1,7 +1,9 @@
-<?php
+<?php declare(strict_types=1);
 namespace Dadapas\HttpTests\Unit;
 
-class UriTest
+use PHPUnit\Framework\TestCase;
+
+final class UriTest extends TestCase
 {
 	public function makeOptionTest()
 	{
