@@ -1,89 +1,165 @@
 <?php
 namespace Dadapas\Http;
 
+use function parse_url;
+
 use Psr\Http\Message\UriInterface;
 use InvalidArgumentException;
 
 class Uri implements UriInterface
 {
+	protected $scheme;
+
+	protected $host;
+
+	protected $user;
+
+	protected $password;
+
+	protected $port;
+
+	protected $path;
+
+	protected $query;
+
+	protected $fragment;
+
+	/**
+	 * @throws InvalidArgumentException
+	*/ 
+	public function __construct(string $uri)
+	{
+		$parsed = parse_url($uri);
+
+		self::verifySupportSchme($parsed['scheme']);
+
+		$this->scheme = $parsed['scheme'];
+		$this->host = $parsed['host'];
+
+		if (isset($parsed['user']))
+			$this->user = $parsed['user'];
+		if (isset($parsed['pass']))
+			$this->password = $parsed['pass'];
+		if (isset($parsed['path']))
+			$this->path = $parsed['path'];
+		if (isset($parsed['query']))
+			$this->query = $parsed['query'];
+		if (isset($parsed['fragment']))
+			$this->fragment = $parsed['fragment'];
+	}
+
+	protected static function verifySupportSchme($scheme)
+	{
+		if ( ! in_array($scheme, ['http', 'https']) )
+			throw new InvalidArgumentException('Only "http" and "https" support scheme');
+	}
+
 	public function getScheme()
-	{}
+	{
+		return $this->scheme;
+	}
 
-	/**
-     * Retrieve the authority component of the URI.
-     *
-     * If no authority information is present, this method MUST return an empty
-     * string.
-     *
-     * The authority syntax of the URI is:
-     *
-     * <pre>
-     * [user-info@]host[:port]
-     * </pre>
-     *
-     * If the port component is not set or is the standard port for the current
-     * scheme, it SHOULD NOT be included.
-     *
-     * @see https://tools.ietf.org/html/rfc3986#section-3.2
-     * @return string The URI authority, in "[user-info@]host[:port]" format.
-     */
 	public function getAuthority()
-	{}
+	{
 
-	/**
-     * Retrieve the user information component of the URI.
-     *
-     * If no user information is present, this method MUST return an empty
-     * string.
-     *
-     * If a user is present in the URI, this will return that value;
-     * additionally, if the password is also present, it will be appended to the
-     * user value, with a colon (":") separating the values.
-     *
-     * The trailing "@" character is not part of the user information and MUST
-     * NOT be added.
-     *
-     * @return string The URI user information, in "username[:password]" format.
-     */
+	}
+
 	public function getUserInfo()
 	{}
 
 	public function getHost()
-	{}
+	{
+		return $this->host;
+	}
 
 	public function getPort()
-	{}
+	{
+		return $this->port;
+	}
 
 	public function getPath()
-	{}
+	{
+		return $this->path;
+	}
 
 	public function getQuery()
-	{}
+	{
+		return $this->query;
+	}
 
 	public function getFragment()
-	{}
+	{
+		return $this->fragment;
+	}
 
 	public function withScheme($scheme)
-	{}
+	{
+		self::verifySupportSchme($scheme);
+		$this->scheme = $scheme;
+	}
 
 	public function withUserInfo($user, $password = null)
-	{}
+	{
+		$this->user = $user;
+		$this->password = $password;
+	}
 
 	public function withHost($host)
-	{}
+	{
+		$this->host = $host;
+	}
 
 	public function withPort($port)
-	{}
+	{
+		$this->port = $port;
+	}
 
 	public function withPath($path)
-	{}
+	{
+		$path = preg_replace('/^\/(.+)\/$/', '$1', $path);
+		$this->path = "/{$path}";
+	}
 
 	public function withQuery($query)
-	{}
+	{
+		$query = preg_replace('/\?/', '', $query);
+		$this->query = $query;
+	}
 
 	public function withFragment($fragment)
-	{}
+	{
+		$this->fragment = $fragment;
+	}
 
 	public function __toString()
-	{}
+	{
+		$uri = "{$this->scheme}://";
+		$authority = "";
+
+		if ($this->user)
+			$authority .= "$this->user";
+
+		if ($this->password)
+			$authority .= ":{$this->password}";
+
+		if ($authority)
+			$uri .= "{$authority}@";
+
+		$uri .= "{$this->host}";
+
+		if ($this->port)
+			$uri .= ":{$this->port}";
+
+		if ($this->path)
+			$uri .= $this->path;
+		
+		if ($this->query)
+			$uri .= "?$this->query";
+
+		if ($this->fragment)
+			$uri .= "#{$this->fragment}";
+
+		// $uri = "{$scheme}://{$authority}/{$path}?{$query}#{$fragment}";
+		return $uri;
+	}
 }
