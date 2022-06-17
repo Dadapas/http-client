@@ -4,31 +4,37 @@ namespace Dadapas\Http;
 use Psr\Http\Message\StreamInterface;
 use RuntimeException;
 
-/**
- * Describes a data stream.
- *
- * Typically, an instance will wrap a PHP stream; this interface provides
- * a wrapper around the most common operations, including serialization of
- * the entire stream to a string.
- */
 class Stream implements StreamInterface
 {
+    protected $metadata;
+
+    protected $resource;
+
+    protected $tmpfile;
+
+    public function __construct()
+    {
+        $this->metadata = [];
+        $this->tmpfile = tempnam(sys_get_temp_dir(, 'ddp');
+        $this->resource = fopen($this->tmpfile, 'a+');
+    }
+
+    public function getResource()
+    {
+        return $this->resource;
+    }
+
 	/**
      * Reads all data from the stream into a string, from the beginning to end.
      *
-     * This method MUST attempt to seek to the beginning of the stream before
-     * reading data and read the stream until the end is reached.
-     *
-     * Warning: This could attempt to load a large amount of data into memory.
-     *
-     * This method MUST NOT raise an exception in order to conform with PHP's
-     * string casting operations.
-     *
-     * @see http://php.net/manual/en/language.oop5.magic.php#object.tostring
      * @return string
      */
 	public function __toString()
-	{}
+	{
+        $file = $this->read($this->getSize());
+
+        return $file;
+    }
 
 	/**
      * Closes the stream and any underlying resources.
@@ -36,7 +42,9 @@ class Stream implements StreamInterface
      * @return void
      */
 	public function close()
-	{}
+	{
+        fclose($this->resource);
+    }
 
 	/**
      * Separates any underlying resources from the stream.
@@ -54,7 +62,9 @@ class Stream implements StreamInterface
      * @return int|null Returns the size in bytes if known, or null if unknown.
      */
 	public function getSize()
-	{}
+	{
+        return filesize($this->tmpfile);
+    }
 
 	/**
      * Returns the current position of the file read/write pointer
@@ -64,7 +74,9 @@ class Stream implements StreamInterface
      */
 	public function tell()
 	{
-
+        if ( ! $pos = ftell($this->resource) )
+            throw new \RuntimeException("Impossible to get file position.");
+        return $pos;
 	}
 
 	/**
@@ -73,7 +85,9 @@ class Stream implements StreamInterface
      * @return bool
      */
 	public function eof()
-	{}
+	{
+        return feof($this->resource);
+    }
 
 	/**
      * Returns whether or not the stream is seekable.
@@ -96,26 +110,54 @@ class Stream implements StreamInterface
      * @throws \RuntimeException on failure.
      */
 	public function seek($offset, $whence = SEEK_SET)
-	{}
+	{
+        return fseek($this->resource, $offset, $whence);
+    }
 
 	public function rewind()
-	{}
+	{
+        rewind($this->getResource());
+    }
 
 	public function isWritable()
-	{}
+	{
+        return is_writable($this->tmpfile);
+    }
 
 	public function write($string)
-	{}
+	{
+        $resource = $this->getResource();
+        fwrite($resource, $string);
+        $this->seek(0);
+    }
 
 	public function isReadable()
-	{}
+	{
+        return is_readable($this->tmpfile);
+    }
 
 	public function read($length)
-	{}
+	{
+        $content = fread($this->resource, $length);
+        return $content ?: '';
+    }
 
 	public function getContents()
-	{}
+	{
+        //$this->fseek();
+        return $this->read(1024);
+    }
 
 	public function getMetadata($key = null)
-	{}
+	{
+        if (isset($this->metadata[$key]))
+            return $this->metadata[$key];
+
+        return $this->metadata;
+    }
+
+    public function __destruct()
+    {
+        fclose($this->resource);
+    }
 }
