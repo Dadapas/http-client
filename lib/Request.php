@@ -6,11 +6,11 @@ use Psr\Http\Message\UriInterface;
 use Psr\Http\Message\StreamInterface;
 use InvalidArgumentException;
 
-class Request implements RequestInterface
+class Request extends Message implements RequestInterface
 {
 
 	protected static $methodes = [
-		'GET', 'POST', 'PUT', 'DELETE'
+		'GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'CONNECT', 'OPTIONS', 'TRACE'
 	];
 
 	protected $method;
@@ -22,6 +22,8 @@ class Request implements RequestInterface
 	
 	/** @var target request **/
 	protected $target;
+
+	protected $sep = "; ";
 
 	/**
 	 * @throws InvalidArgumentException
@@ -70,60 +72,7 @@ class Request implements RequestInterface
 	public function withUri(UriInterface $uri, $preserverHost = false)
 	{
 		$this->uri = $uri;
-	}
 
-	public function withProtocolVersion($version)
-	{
-
-	}
-
-	public function getProtocolVersion()
-	{
-		return '';
-	}
-
-	public function getHeaders()
-	{
-		return array();
-	}
-
-	public function getHeader($name)
-	{
-
-	}
-
-	public function getHeaderLine($name)
-	{
-
-	}
-
-	public function withHeader($name, $value)
-	{
-
-	}
-
-	public function withAddedHeader($name, $value)
-	{
-
-	}
-
-	public function withoutHeader($name)
-	{
-
-	}
-
-	public function hasHeader($name)
-	{
-
-	}
-
-	public function getBody(): StreamInterface
-	{
-		return new Stream();
-	}
-
-	public function withBody(StreamInterface $body)
-	{
-		
+		return $this;
 	}
 }

@@ -4,26 +4,13 @@ namespace Dadapas\Http;
 use Psr\Http\Message\ResponseInterface;
 use InvalidArgumentException;
 
-/**
- * Representation of an outgoing, server-side response.
- *
- * Per the HTTP specification, this interface includes properties for
- * each of the following:
- *
- * - Protocol version
- * - Status code and reason phrase
- * - Headers
- * - Message body
- *
- * Responses are considered immutable; all methods that might change state MUST
- * be implemented such that they retain the internal state of the current
- * message and return an instance that contains the changed state.
- */
-class Response implements ResponseInterface
+class Response extends Message implements ResponseInterface
 {
     protected $status;
 
-    final protected static $statuses = [
+    protected $stream;
+
+    protected static $statuses = [
         100 => 'Continue',
         101 => 'Switching Protocols',
         103 => 'Early Hints',
@@ -124,8 +111,13 @@ class Response implements ResponseInterface
         return self::$statuses[$this->status] ?: '';
     }
 
-    public function getBody()
+    public function toJson()
     {
-        return $this->body;
+        return array();
+    }
+
+    public function toString()
+    {
+        return '';
     }
 }
