@@ -29,28 +29,38 @@ class Request extends Message implements RequestInterface
 	 * @throws InvalidArgumentException
 	 * @return void
 	*/ 
-	protected function verifyMethod(string $method)
+	protected static function verifyMethod(string $method)
 	{
-		if ( ! in_array($method, self::$methodes) )
-			throw new InvalidArgumentException('Invalid method.', $method);
+		if ( ! in_array(strtoupper($method), self::$methodes) )
+			throw new InvalidArgumentException('Invalid method '. $method);
 	}
 
 	public function __construct(string $method, $uri)
 	{
-		
-		$this->method = $method;
+		parent::__construct();
+		self::verifyMethod($method);
 
+		$this->method = $method;
 		$this->uri = new Uri($uri);
 	}
 
 	public function getRequestTarget()
 	{
-
+		return $this->target;
 	}
 
 	public function withRequestTarget($requestTarget)
 	{
 		$this->target = $requestTarget;
+
+		return $this;
+	}
+
+	public function setAuth($user, $pass = null)
+	{
+		$this->uri->withUserInfo($user, $pass);
+
+		return $this;
 	}
 
 	public function getMethod()
