@@ -72,6 +72,8 @@ class Response extends Message implements ResponseInterface
         511 => 'Network Authentification Required'
     ];
 
+    protected $sep = "; ";
+
     public static function isValidStatus($status)
     {
         if ( ! array_key_exists($status, self::$statuses) )
@@ -91,16 +93,13 @@ class Response extends Message implements ResponseInterface
         return $this->status;
     }
 
-    public function status()
-    {
-        return $this->getStatusCode();
-    }
-
 	public function withStatus($code, $reasonPhrase = '')
 	{
         self::isValidStatus($code);
         
         $this->status = $code;
+
+        return $this;
     }
 
 	/**

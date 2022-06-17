@@ -72,6 +72,8 @@ class Request extends Message implements RequestInterface
 	{
 		$this->verifyMethod($method);
 		$this->method = $method;
+
+		return $this;
 	}
 
 	public function getUri()

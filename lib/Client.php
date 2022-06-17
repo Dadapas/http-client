@@ -16,8 +16,6 @@ class Client implements ClientInterface
 
 	protected $request;
 
-	protected $header;
-
 	protected $url;
 
 	public function __construct($url = "")
@@ -32,6 +30,8 @@ class Client implements ClientInterface
 
 		$response = new Response();
 
+		$response->
+
 		return $response;
 	}
 
@@ -39,8 +39,9 @@ class Client implements ClientInterface
 	{
 		foreach($headers as $key => $head)
 		{
-			$this->header[$key] => $head;
+			$this->header[$key] = $head;
 		}
+		return $this;
 	}
 
 
@@ -49,12 +50,12 @@ class Client implements ClientInterface
 		$this->url = $url;
 	}
 
-	protected function setOption($key, $value)
+	public function setOption($key, $value)
 	{
 		curl_setopt($this->curl, $key, $value);
 	}
 
-	public function get(string $url): ResponseInterface
+	public function get(string $url)
 	{
 		$this->setOption( CURLOPT_URL, $url);
 
@@ -64,12 +65,19 @@ class Client implements ClientInterface
 
 	public function post(string $uri, array $data)
 	{
+		echo "post called";
+		$this->url = preg_replace('/\/$/', '', $this->url);
+		$uri = preg_replace('/^\//', '', $uri);
 
+		$this->setOption( CURLOPT_URL, $this->url.'/'.$uri );
+
+		$response = new Response();
+		return $response;
 	}
 
 	public static function __callStatic($name, $arguments)
     {
-
+    	call_user_func_array(array($this, $name), $arguments);
     }
 
 	public function __destruct()
