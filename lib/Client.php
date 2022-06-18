@@ -26,23 +26,105 @@ class Client implements ClientInterface
 
 	protected $request;
 
-	protected $url;
+	protected $baseUrl;
 
-	public function __construct($url = "")
+	protected $header = [];
+
+	public function __construct(string $baseUrl = "")
 	{
 		$this->curl = curl_init();
-		$this->url = $url;
+		$this->baseUrl = $baseUrl;
 	}
 
 	public function sendRequest(RequestInterface $request): ResponseInterface
 	{
-		$this->request = $request;
 
-		$response = new Response();
+		$this->setOption(CURLOPT_URL, (string) $request->getUri());
+		$this->setOption(CURLOPT_RETURNTRANSFER, true);
 
-		$response->
+		$requestBody = (string) $request->getBody();
+
+		if ('GET' === $request->getMethod())
+		{}
+
+		if ( 'POST' === $request->getMethod() )
+		{
+			$this->setOption(CURLOPT_POST, true);
+		}
+
+		if ( 'PUT' === $request->getMethod())
+		{
+			$this->setOption(CURLOPT_PUT, true);
+		}
+
+		// Set headers
+		$headers = $request->headerArray();
+
+		$this->setOption( CURLOPT_HTTPHEADER, $headers);
+
+		if ( ! empty($requestBody) )
+		{
+			$this->setOption(CURLOPT_POSTFIELDS, $requestBody);
+		}
+
+		$returnString = curl_exec($this->curl);
+
+		if (curl_errno($this->curl))
+		{
+			throw new Exception\HttpException(curl_error($this->curl));
+		}
+
+		$headers = curl_getinfo($this->curl);
+
+		$response = new Response($headers['http_code'], $returnString);
+		$response->withHeader('Content-Type', $headers['content_type']);
+
+		curl_reset($this->curl);
+
+		$this->close();
 
 		return $response;
+	}
+
+	protected function applyHeader(RequestInterface $request)
+	{
+		foreach($this->header as $key => $head) {
+
+			$request->withHeader($key, $head);
+		}
+	}
+
+	protected function setOption($key, $value)
+	{
+		curl_setopt($this->curl, $key, $value);
+	}
+
+	public function get(string $url)
+	{
+		if (Uri::valid($this->baseUrl))
+		{
+			$url = Uri::combine($this->baseUrl, $url);
+		}
+		
+		$request = new Request('GET', $url);
+		$this->applyHeader($request);
+
+		return $this->sendRequest($request);
+	}
+
+	public function post(string $url, array $data)
+	{
+		$request = new Request('POST', $uri);
+		$this->applyHeader($request);
+
+		return $this->sendRequest($request);
+	}
+
+	public function basicAuth(string $user, string $pass)
+	{
+		$this->header['Authorization'] = 'Basic '. base64_encode("{$user}:{$pass}");
+
+		return $this;
 	}
 
 	public function headers(array $headers)
@@ -54,44 +136,8 @@ class Client implements ClientInterface
 		return $this;
 	}
 
-
-	public function baseUri(string $url)
-	{
-		$this->url = $url;
-	}
-
-	public function setOption($key, $value)
-	{
-		curl_setopt($this->curl, $key, $value);
-	}
-
-	public function get(string $url)
-	{
-		$this->setOption( CURLOPT_URL, $url);
-
-		$response = new Response();
-		return $response;
-	}
-
-	public function post(string $uri, array $data)
-	{
-		echo "post called";
-		$this->url = preg_replace('/\/$/', '', $this->url);
-		$uri = preg_replace('/^\//', '', $uri);
-
-		$this->setOption( CURLOPT_URL, $this->url.'/'.$uri );
-
-		$response = new Response();
-		return $response;
-	}
-
-	public static function __callStatic($name, $arguments)
+    protected function close()
     {
-    	call_user_func_array(array($this, $name), $arguments);
+    	curl_close($this->curl);
     }
-
-	public function __destruct()
-	{
-		curl_close($this->curl);
-	}
 }
