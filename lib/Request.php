@@ -47,7 +47,7 @@ class Request extends Message implements RequestInterface
 
 	public function __construct(string $method, $uri)
 	{
-		parent::__construct();
+		//parent::__construct();
 		self::verifyMethod($method);
 
 		$this->method = $method;
@@ -96,5 +96,22 @@ class Request extends Message implements RequestInterface
 		$this->uri = $uri;
 
 		return $this;
+	}
+
+	/**
+	 * Get the header array
+	 * 
+	 * @return array
+	*/
+	public function headerArray()
+	{
+		$headers = [];
+		foreach(array_merge($this->headers, $this->header_changed) as $key => $header)
+		{
+			$headerString = implode($this->sep, $header);
+			$headers[] = "{$key}: {$headerString}";
+		}
+
+		return $headers;
 	}
 }
