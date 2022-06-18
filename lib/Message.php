@@ -30,11 +30,6 @@ class Message implements MessageInterface
 
 	protected $body;
 
-	public function __construct()
-	{
-
-	}
-
 	public function withProtocolVersion($version)
 	{
 		$this->protocol = $version;
@@ -54,7 +49,8 @@ class Message implements MessageInterface
 	{
 		if ( ! $this->hasHeader($name))
 			return [];
-		return $this->header_changed[strtolower($name)];
+
+		return array_values($this->header_changed[strtolower($name)]);
 	}
 
 	public function getChangedHeader()
@@ -79,7 +75,7 @@ class Message implements MessageInterface
 
 	public function withHeader($name, $value)
 	{
-		$this->header_changed[strtolower($name)][$value] = $value;
+		$this->header_changed[strtolower($name)] = [$value => $value];
 
 		return $this;
 	}
@@ -101,13 +97,16 @@ class Message implements MessageInterface
 
 	public function hasHeader($name)
 	{
-		if ( isset($this->headers[strtolower($name)]) )
+		if ( isset($this->header_changed[strtolower($name)]) )
 			return true;
 		return false;
 	}
 
 	public function getBody()
 	{
+		if (null === $this->body)
+			$this->body = new Stream();
+		
 		return $this->body;
 	}
 
