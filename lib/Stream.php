@@ -73,7 +73,7 @@ class Stream implements StreamInterface
      */
 	public function getSize()
 	{
-        return filesize($this->tmpfile);
+        return filesize($this->tmpfile) ?: 1024;
     }
 
 	/**
