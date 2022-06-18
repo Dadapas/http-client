@@ -33,7 +33,7 @@ class Request extends Message implements RequestInterface
 	/** @var target request **/
 	protected $target;
 
-	protected $sep = "; ";
+	/*protected $sep = ",";*/
 
 	/**
 	 * @throws InvalidArgumentException

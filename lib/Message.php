@@ -18,7 +18,7 @@ class Message implements MessageInterface
 {
 	protected $header_changed = [];
 
-	protected $sep = ",";
+	protected $sep = "; ";
 
 	protected $headers = [
 		'accept' => ['*/*'],
