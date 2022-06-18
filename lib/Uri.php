@@ -40,6 +40,9 @@ class Uri implements UriInterface
 	{
 		$parsed = parse_url($uri);
 
+		if ( ! (isset($parsed['scheme']) || isset($parsed['host'])) )
+			throw new InvalidArgumentException("invalid uri.");
+		
 		self::verifySupportSchme($parsed['scheme']);
 
 		$this->scheme = $parsed['scheme'];
