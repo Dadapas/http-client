@@ -73,11 +73,27 @@ class Uri implements UriInterface
 
 	public function getAuthority()
 	{
+		$authority = "";
+		if ($userInfo = $this->getUserInfo())
+			$authority .= $this->getUserInfo()."@";
 
+		if ($this->host)
+			$authority .= "{$this->host}";
+
+		return $authority;
 	}
 
 	public function getUserInfo()
-	{}
+	{
+		$userInfo = "";
+		if ($this->user)
+			$userInfo .= "{$this->user}";
+
+		if ($this->user && $this->password)
+			$userInfo .= ":{$this->password}";
+
+		return $userInfo;
+	}
 
 	public function getHost()
 	{
@@ -145,22 +161,11 @@ class Uri implements UriInterface
 
 	public function __toString()
 	{
-		$uri = "{$this->scheme}://";
-		$authority = "";
+		$uri  = "{$this->scheme}://";
 
-		if ($this->user)
-			$authority .= "$this->user";
+		$uri .= $this->getAuthority();
 
-		if ($this->password)
-			$authority .= ":{$this->password}";
-
-		if ($authority)
-			$uri .= "{$authority}@";
-
-		$uri .= "{$this->host}";
-
-		if ($this->port)
-			$uri .= ":{$this->port}";
+		$uri .= $this->getPort() ?: '';
 
 		if ($this->path)
 			$uri .= $this->path;
