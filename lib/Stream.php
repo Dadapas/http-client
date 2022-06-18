@@ -22,10 +22,13 @@ class Stream implements StreamInterface
 
     protected $tmpfile;
 
+    protected $content;
+
     public function __construct()
     {
         $this->metadata = [];
-        $this->tmpfile = tempnam(sys_get_temp_dir(, 'ddp');
+        $this->tmpfile = tempnam(sys_get_temp_dir(), 'ddp');
+
         $this->resource = fopen($this->tmpfile, 'a+');
     }
 
@@ -110,13 +113,9 @@ class Stream implements StreamInterface
 	/**
      * Seek to a position in the stream.
      *
-     * @see http://www.php.net/manual/en/function.fseek.php
      * @param int $offset Stream offset
      * @param int $whence Specifies how the cursor position will be calculated
-     *     based on the seek offset. Valid values are identical to the built-in
-     *     PHP $whence values for `fseek()`.  SEEK_SET: Set position equal to
-     *     offset bytes SEEK_CUR: Set position to current location plus offset
-     *     SEEK_END: Set position to end-of-stream plus offset.
+     *     based on the seek offset.
      * @throws \RuntimeException on failure.
      */
 	public function seek($offset, $whence = SEEK_SET)
