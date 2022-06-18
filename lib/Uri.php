@@ -176,7 +176,23 @@ class Uri implements UriInterface
 		if ($this->fragment)
 			$uri .= "#{$this->fragment}";
 
-		// $uri = "{$scheme}://{$authority}/{$path}?{$query}#{$fragment}";
+		// "{$scheme}://{$authority}/{$path}?{$query}#{$fragment}";
 		return $uri;
+	}
+
+	public static function valid(string $url)
+	{
+		return 1 === preg_match('/(http?s?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})/', $url);
+	}
+
+	public static function combine(string $baseUrl, string $uri)
+	{
+		$baseUrl = preg_replace('/\/$/', '', $baseUrl);
+		
+		if ('/' === $uri)
+			return $baseUrl;
+
+		$uri = preg_replace('/^\/(.+)(?\/)/', '', $uri);
+		return $baseUrl . "/" . $uri;
 	}
 }
