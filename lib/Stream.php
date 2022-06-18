@@ -44,8 +44,11 @@ class Stream implements StreamInterface
      */
 	public function __toString()
 	{
-        $file = $this->read($this->getSize());
+        if ($this->content)
+            return $this->content;
 
+        $file = $this->read($this->getSize());
+        $this->content = $file;
         return $file;
     }
 

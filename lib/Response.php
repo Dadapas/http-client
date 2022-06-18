@@ -85,6 +85,8 @@ class Response extends Message implements ResponseInterface
 
     protected $sep = "; ";
 
+    protected $content;
+
     public static function isValidStatus($status)
     {
         if ( ! array_key_exists($status, self::$statuses) )
@@ -96,7 +98,12 @@ class Response extends Message implements ResponseInterface
         self::isValidStatus($status);
 
         $this->status = $status;
-        $this->body   = new Stream($content);
+        $stream = new Stream();
+        
+        if ( ! empty($content))
+            $stream->write($content);
+        
+        $this->body = $stream;
     }
 
 	public function getStatusCode()
@@ -121,13 +128,48 @@ class Response extends Message implements ResponseInterface
         return self::$statuses[$this->status] ?: '';
     }
 
-    public function toJson()
+    protected function response(bool $toArray = false)
     {
-        return array();
+        $stringBody = $this->content;
+
+        if (null === $this->content)
+        {
+            $stringBody = (string) $this->body;
+        }
+
+        $this->content = $stringBody;
+        return json_decode($stringBody, $toArray);
+    }
+
+    public function json()
+    {
+        return $this->response(true);
+    }
+
+    public function result()
+    {
+        return $this->response();
+    }
+
+    public function code()
+    {
+        return $this->getStatusCode();
+    }
+
+    public function status()
+    {
+        return $this->getReasonPhrase();
     }
 
     public function toString()
     {
-        return '';
+
+        if (null === $this->content)
+        {
+            $body = (string) $this->body;
+            $this->content = $body;
+        }
+
+        return $this->content;
     }
 }
